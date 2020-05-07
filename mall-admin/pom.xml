@@ -18,6 +18,10 @@
             <artifactId>mall-mbg</artifactId>
         </dependency>
         <dependency>
+            <groupId>net.arver.mall</groupId>
+            <artifactId>mall-security</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.aliyun.oss</groupId>
             <artifactId>aliyun-sdk-oss</artifactId>
         </dependency>
