@@ -3,18 +3,30 @@ package net.arver.mall.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import net.arver.mall.bo.AdminUserDetails;
 import net.arver.mall.dao.UmsAdminRoleRelationDao;
+import net.arver.mall.mapper.UmsAdminLoginLogMapper;
 import net.arver.mall.mapper.UmsAdminMapper;
 import net.arver.mall.model.UmsAdmin;
 import net.arver.mall.model.UmsAdminExample;
+import net.arver.mall.model.UmsAdminLoginLog;
 import net.arver.mall.model.UmsResource;
+import net.arver.mall.security.util.JwtTokenUtil;
 import net.arver.mall.service.UmsAdminService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -26,6 +38,12 @@ public class UmsAdminServiceImpl implements UmsAdminService {
     private static final Logger LOGGER = LoggerFactory.getLogger(UmsAdminServiceImpl.class);
 
     @Autowired
+    private JwtTokenUtil jwtTokenUtil;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
     private UmsAdminCacheServiceImpl adminCacheService;
 
     @Autowired
@@ -33,6 +51,9 @@ public class UmsAdminServiceImpl implements UmsAdminService {
 
     @Autowired
     private UmsAdminRoleRelationDao adminRoleRelationDao;
+
+    @Autowired
+    private UmsAdminLoginLogMapper loginLogMapper;
 
 
     @Override
@@ -51,6 +72,42 @@ public class UmsAdminServiceImpl implements UmsAdminService {
         }
 
         return null;
+    }
+
+    @Override
+    public String login(final String username, final String password) {
+        String token = null;
+        try {
+            final UserDetails userDetails = loadUserByUsername(username);
+            if (!passwordEncoder.matches(password, userDetails.getPassword())) {
+                throw new BadCredentialsException("密码不正确");
+            }
+            final UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            token = jwtTokenUtil.generateToken(userDetails);
+            insertLoginLog(username);
+        } catch (AuthenticationException e) {
+            LOGGER.warn("登录异常：{}", e.getMessage());
+        }
+        return token;
+    }
+
+    /**
+     * 添加登录记录
+     * @param username
+     */
+    private void insertLoginLog(final String username) {
+        final UmsAdmin admin = getAdminByUsername(username);
+        if (admin == null) {
+            return;
+        }
+        final UmsAdminLoginLog loginLog = new UmsAdminLoginLog();
+        loginLog.setAdminId(admin.getId());
+        loginLog.setCreateTime(new Date());
+        final ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        final HttpServletRequest request = attributes.getRequest();
+        loginLog.setIp(request.getRemoteAddr());
+        loginLogMapper.insert(loginLog);
     }
 
     @Override

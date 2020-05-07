@@ -15,10 +15,12 @@ public class JsonResult<T> {
 
     /**
      * 成功返回结果
-     * @param data
      * @param <T>
      * @return
      */
+    public static <T> JsonResult<T> success() {
+        return new JsonResult<T>(ResultCode.SUCCESS.getCode(), ResultCode.SUCCESS.getMessage(), null);
+    }
     public static <T> JsonResult<T> success(final T data) {
         return new JsonResult<T>(ResultCode.SUCCESS.getCode(), ResultCode.SUCCESS.getMessage(), data);
     }

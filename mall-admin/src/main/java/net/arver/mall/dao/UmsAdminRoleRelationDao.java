@@ -1,7 +1,7 @@
 package net.arver.mall.dao;
 
 import net.arver.mall.model.UmsResource;
-import net.arver.mall.provider.UmsAdminRoleRelationSqlProvider;
+import net.arver.mall.provider.UmsAdminRoleRelationDaoSqlProvider;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.SelectProvider;
 
@@ -17,6 +17,6 @@ public interface UmsAdminRoleRelationDao {
      * @param adminId
      * @return
      */
-    @SelectProvider(type = UmsAdminRoleRelationSqlProvider.class, method = "getResourceList")
+    @SelectProvider(type = UmsAdminRoleRelationDaoSqlProvider.class, method = "getResourceList")
     List<UmsResource> getResourceList(@Param("adminId") Long adminId);
 }

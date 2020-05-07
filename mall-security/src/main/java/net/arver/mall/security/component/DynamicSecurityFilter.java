@@ -7,6 +7,7 @@ import org.springframework.security.access.SecurityMetadataSource;
 import org.springframework.security.access.intercept.AbstractSecurityInterceptor;
 import org.springframework.security.access.intercept.InterceptorStatusToken;
 import org.springframework.security.web.FilterInvocation;
+import org.springframework.util.AntPathMatcher;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -44,11 +45,20 @@ public class DynamicSecurityFilter extends AbstractSecurityInterceptor implement
     public void doFilter(final ServletRequest servletRequest, final ServletResponse servletResponse, final FilterChain filterChain) throws IOException, ServletException {
         final HttpServletRequest request = (HttpServletRequest) servletRequest;
         final FilterInvocation fi = new FilterInvocation(servletRequest, servletResponse, filterChain);
-        //OPTIONS请求直接方向
+        //OPTIONS请求直接放行
         if (request.getMethod().equals(HttpMethod.OPTIONS.toString())) {
             fi.getChain().doFilter(fi.getRequest(), fi.getResponse());
             return;
         }
+        // 白名单请求直接放行
+        final AntPathMatcher pathMatcher = new AntPathMatcher();
+        for (final String path : ignoreUrlsConfig.getUrls()) {
+            if (pathMatcher.match(path, request.getRequestURI())) {
+                fi.getChain().doFilter(fi.getRequest(), fi.getResponse());
+                return;
+            }
+        }
+
         //此处会调用AccessDecisionManager中的decide方法进行鉴权操作
         final InterceptorStatusToken token = super.beforeInvocation(fi);
         try {

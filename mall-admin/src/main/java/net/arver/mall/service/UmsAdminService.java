@@ -19,6 +19,14 @@ public interface UmsAdminService {
     UmsAdmin getAdminByUsername(String username);
 
     /**
+     * 登录功能
+     * @param username
+     * @param password
+     * @return
+     */
+    String login(String username, String password);
+
+    /**
      * 获取指定用户的可访问资源.
      * @param adminId
      * @return
