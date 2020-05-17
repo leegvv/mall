@@ -4,7 +4,7 @@ import org.apache.ibatis.jdbc.SQL;
 
 public class UmsAdminRoleRelationDaoSqlProvider {
 
-    public String getResourceList(Long adminId){
+    public String getResourceList(final Long adminId){
         return new SQL(){{
             SELECT("ur.id id, ur.create_time create_time, ur.name name, ur.url url,"
                 + " ur.description description, ur.category_id category_id");
@@ -16,6 +16,16 @@ public class UmsAdminRoleRelationDaoSqlProvider {
             );
             WHERE("ar.admin_id = #{adminId}", "ur.id IS NOT NULL");
             GROUP_BY("ur.id");
+        }}.toString();
+    }
+
+    public String getAdminIdList(final Long resourceId) {
+        return new SQL(){{
+            SELECT_DISTINCT("ar.admin_id");
+            FROM("ums_role_resource_relation rr");
+            LEFT_OUTER_JOIN("ums_admin-role_relation ar on rr.role_id = ar.role_id");
+            WHERE("rr.resource_id = #{resourceId}");
+
         }}.toString();
     }
 }

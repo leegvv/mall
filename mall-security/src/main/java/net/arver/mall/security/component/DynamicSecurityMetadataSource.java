@@ -52,6 +52,7 @@ public class DynamicSecurityMetadataSource implements FilterInvocationSecurityMe
                 configAttributes.add(configAttributeMap.get(pattern));
             }
         }
+        // 未设置操作请求权限，返回空集合
         return configAttributes;
     }
 

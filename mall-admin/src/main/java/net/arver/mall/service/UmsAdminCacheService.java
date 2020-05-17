@@ -8,6 +8,12 @@ import java.util.List;
 public interface UmsAdminCacheService {
 
     /**
+     * 当资源信息改变时，删除资源项目后台用户缓存
+     * @param resourceId
+     */
+    void delResourceListByResource(Long resourceId);
+
+    /**
      * 获取缓存后台用户信息
      * @param username
      * @return

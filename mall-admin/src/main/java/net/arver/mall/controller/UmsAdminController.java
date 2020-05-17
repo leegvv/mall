@@ -66,4 +66,10 @@ public class UmsAdminController {
         data.put("icon", umsAdmin.getIcon());
         return JsonResult.success(data);
     }
+
+    @ApiOperation("登出功能")
+    @PostMapping("/logout")
+    public JsonResult logout() {
+        return JsonResult.success();
+    }
 }

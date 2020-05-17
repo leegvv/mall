@@ -1,5 +1,7 @@
 package net.arver.mall.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
+import net.arver.mall.dao.UmsAdminRoleRelationDao;
 import net.arver.mall.model.UmsAdmin;
 import net.arver.mall.model.UmsResource;
 import net.arver.mall.security.service.RedisService;
@@ -9,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UmsAdminCacheServiceImpl implements UmsAdminCacheService {
@@ -27,6 +30,21 @@ public class UmsAdminCacheServiceImpl implements UmsAdminCacheService {
 
     @Autowired
     private RedisService redisService;
+
+    @Autowired
+    private UmsAdminRoleRelationDao adminRoleRelationDao;
+
+    @Override
+    public void delResourceListByResource(final Long resourceId) {
+        final List<Long> adminIdList = adminRoleRelationDao.getAdminIdList(resourceId);
+        if (CollUtil.isNotEmpty(adminIdList)) {
+            final String keyPrefix = REDIS_DATABASE + ":" + REDIS_KEY_RESOURCE_LIST + ":";
+            final List<String> keys = adminIdList.stream()
+                .map(adminId -> keyPrefix + adminId).collect(Collectors.toList());
+            redisService.del(keys);
+        }
+
+    }
 
     @Override
     public UmsAdmin getAdmin(final String username) {

@@ -19,4 +19,12 @@ public interface UmsAdminRoleRelationDao {
      */
     @SelectProvider(type = UmsAdminRoleRelationDaoSqlProvider.class, method = "getResourceList")
     List<UmsResource> getResourceList(@Param("adminId") Long adminId);
+
+    /**
+     * 获取资源相关用户ID列表
+     * @param resourceId
+     * @return
+     */
+    @SelectProvider(type = UmsAdminRoleRelationDaoSqlProvider.class, method = "getAdminIdList")
+    List<Long> getAdminIdList(Long resourceId);
 }
