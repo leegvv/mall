@@ -2,10 +2,14 @@ package net.arver.mall.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import net.arver.mall.dao.UmsAdminRoleRelationDao;
+import net.arver.mall.mapper.UmsAdminRoleRelationMapper;
 import net.arver.mall.model.UmsAdmin;
+import net.arver.mall.model.UmsAdminRoleRelation;
+import net.arver.mall.model.UmsAdminRoleRelationExample;
 import net.arver.mall.model.UmsResource;
 import net.arver.mall.security.service.RedisService;
 import net.arver.mall.service.UmsAdminCacheService;
+import net.arver.mall.service.UmsAdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -29,10 +33,57 @@ public class UmsAdminCacheServiceImpl implements UmsAdminCacheService {
     private String REDIS_KEY_RESOURCE_LIST;
 
     @Autowired
+    private UmsAdminService adminService;
+
+    @Autowired
     private RedisService redisService;
 
     @Autowired
+    private UmsAdminRoleRelationMapper adminRoleRelationMapper;
+
+    @Autowired
     private UmsAdminRoleRelationDao adminRoleRelationDao;
+
+    @Override
+    public void delAdmin(final Long adminId) {
+        final UmsAdmin admin = adminService.getItem(adminId);
+        if (admin != null) {
+            final String key = REDIS_DATABASE + ":" + REDIS_KEY_ADMIN + ":" + admin.getUsername();
+            redisService.del(key);
+        }
+    }
+
+    @Override
+    public void delResourceList(final Long adminId) {
+        final String key = REDIS_DATABASE + ":" + REDIS_KEY_RESOURCE_LIST + ":" + adminId;
+        redisService.del(key);
+    }
+
+    @Override
+    public void delResourceListByRole(final Long roleId) {
+        final UmsAdminRoleRelationExample example = new UmsAdminRoleRelationExample();
+        example.createCriteria().andRoleIdEqualTo(roleId);
+        final List<UmsAdminRoleRelation> relationList = adminRoleRelationMapper.selectByExample(example);
+        if (CollUtil.isNotEmpty(relationList)) {
+            final String keyPrefix = REDIS_DATABASE + ":" + REDIS_KEY_RESOURCE_LIST + ":";
+            final List<String> keys = relationList.stream()
+                .map(relation -> keyPrefix + relation.getAdminId()).collect(Collectors.toList());
+            redisService.del(keys);
+        }
+    }
+
+    @Override
+    public void delResourceListByRoleIds(final List<Long> roleIds) {
+        final UmsAdminRoleRelationExample example = new UmsAdminRoleRelationExample();
+        example.createCriteria().andRoleIdIn(roleIds);
+        final List<UmsAdminRoleRelation> relationList = adminRoleRelationMapper.selectByExample(example);
+        if (CollUtil.isNotEmpty(relationList)) {
+            final String keyPrefix = REDIS_DATABASE + ":" + REDIS_KEY_RESOURCE_LIST + ":";
+            final List<String> keys = relationList.stream()
+                .map(relation -> keyPrefix + relation.getAdminId()).collect(Collectors.toList());
+            redisService.del(keys);
+        }
+    }
 
     @Override
     public void delResourceListByResource(final Long resourceId) {

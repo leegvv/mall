@@ -15,4 +15,24 @@ public class UmsRoleDaoSqlProvider {
             GROUP_BY("m.id");
         }}.toString();
     }
+
+    public String getMenuListByRoleId() {
+        return new SQL() {{
+            SELECT("m.*");
+            FROM("ums_role_menu_relation rmr");
+            LEFT_OUTER_JOIN("ums_menu m ON rmr.menu_id = m.id");
+            WHERE("rmr.role_id = #{roleId}", "m.id IS NOT NULL");
+            GROUP_BY("m.id");
+        }}.toString();
+    }
+
+    public String getResourceListByRoleId() {
+        return new SQL() {{
+            SELECT("r.*");
+            FROM("ums_role_resource_relation rrr");
+            LEFT_OUTER_JOIN("ums_resource r ON rrr.resource_id = r.id");
+            WHERE("rrr.role_id = #{roleId}", "r.id IS NOT NULL");
+            GROUP_BY("r.id");
+        }}.toString();
+    }
 }
