@@ -3,7 +3,7 @@ package net.arver.mall.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import net.arver.mall.common.api.JsonResult;
-import net.arver.mall.dao.SmsFlashPromotionSessionDetail;
+import net.arver.mall.dto.SmsFlashPromotionSessionDetail;
 import net.arver.mall.model.SmsFlashPromotionSession;
 import net.arver.mall.service.SmsFlashPromotionSessionService;
 import org.springframework.beans.factory.annotation.Autowired;

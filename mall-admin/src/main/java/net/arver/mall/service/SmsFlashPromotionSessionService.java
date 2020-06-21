@@ -1,6 +1,6 @@
 package net.arver.mall.service;
 
-import net.arver.mall.dao.SmsFlashPromotionSessionDetail;
+import net.arver.mall.dto.SmsFlashPromotionSessionDetail;
 import net.arver.mall.model.SmsFlashPromotionSession;
 
 import java.util.List;

@@ -1,6 +1,6 @@
 package net.arver.mall.service.impl;
 
-import net.arver.mall.dao.SmsFlashPromotionSessionDetail;
+import net.arver.mall.dto.SmsFlashPromotionSessionDetail;
 import net.arver.mall.mapper.SmsFlashPromotionSessionMapper;
 import net.arver.mall.model.SmsFlashPromotionSession;
 import net.arver.mall.model.SmsFlashPromotionSessionExample;

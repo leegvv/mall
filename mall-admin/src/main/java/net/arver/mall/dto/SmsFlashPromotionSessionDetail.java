@@ -1,4 +1,4 @@
-package net.arver.mall.dao;
+package net.arver.mall.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import net.arver.mall.model.SmsFlashPromotionSession;
