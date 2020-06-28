@@ -7,12 +7,14 @@ import net.arver.mall.model.SmsCouponHistory;
 import net.arver.mall.model.SmsCouponHistoryExample;
 import net.arver.mall.service.SmsCouponHistoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 /**
  * 优惠券领取记录管理Service实现类
  */
+@Service
 public class SmsCouponHistoryServiceImpl implements SmsCouponHistoryService {
 
     @Autowired
